@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <!-- Required for Hypervisor.framework (TrollStore/sideload) -->
+    <key>com.apple.private.hypervisor</key>
+    <true/>
+
+    <!-- Required for Virtualization.framework (future iPadOS) -->
+    <key>com.apple.security.virtualization</key>
+    <true/>
+
+    <!-- Network access for OCI image pulls and git operations -->
+    <key>com.apple.security.network.client</key>
+    <true/>
+
+    <!-- Local network for port forwarding -->
+    <key>com.apple.security.network.server</key>
+    <true/>
+
+    <!-- Background execution for VM persistence -->
+    <key>com.apple.developer.background-mode</key>
+    <array>
+        <string>processing</string>
+    </array>
+
+    <!-- In-App Purchase -->
+    <key>com.apple.developer.in-app-payments</key>
+    <array>
+        <string>merchant.com.pocketdev</string>
+    </array>
+
+    <!-- iCloud for project sync -->
+    <key>com.apple.developer.icloud-container-identifiers</key>
+    <array>
+        <string>iCloud.com.pocketdev</string>
+    </array>
+
+    <!-- App Groups for shared data -->
+    <key>com.apple.security.application-groups</key>
+    <array>
+        <string>group.com.pocketdev</string>
+    </array>
+
+    <!-- JIT compilation (for QEMU TCG on AltStore) -->
+    <key>dynamic-codesigning</key>
+    <true/>
+
+    <!-- Increased memory limit -->
+    <key>com.apple.developer.kernel.increased-memory-limit</key>
+    <true/>
+</dict>
+</plist>

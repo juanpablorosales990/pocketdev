@@ -1,0 +1,37 @@
+# Xcode
+*.xcodeproj/xcuserdata/
+*.xcworkspace/xcuserdata/
+DerivedData/
+*.hmap
+*.ipa
+*.dSYM.zip
+*.dSYM
+*.xcuserstate
+
+# Swift Package Manager
+.build/
+.swiftpm/
+Package.resolved
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Build
+build/
+*.o
+*.dylib
+*.a
+
+# Kernel build artifacts
+KernelConfig/*.tar.xz
+KernelConfig/linux-*/
+
+# Resources (built artifacts)
+Resources/vmlinux
+Resources/initrd.img
+
+# Secrets
+.env
+*.key
+*.pem
