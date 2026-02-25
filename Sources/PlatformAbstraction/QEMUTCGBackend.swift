@@ -13,6 +13,7 @@ import Shared
 public final class QEMUTCGBackend: VMBackend, @unchecked Sendable {
     public let name = "QEMU TCG (Emulated)"
     public let performanceTier = PerformanceTier.emulated
+    public let requiresVMSetup = true
 
     public var isAvailable: Bool {
         Self.checkAvailability().available

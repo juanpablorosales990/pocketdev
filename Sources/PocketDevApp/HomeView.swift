@@ -191,6 +191,7 @@ struct ContainerRow: View {
 struct TemplateGridCard: View {
     let template: ContainerTemplate
     @EnvironmentObject var appState: AppState
+    @State private var errorMessage: String?
 
     var body: some View {
         Button(action: {
@@ -205,7 +206,8 @@ struct TemplateGridCard: View {
                     )
                     try await appState.createContainer(config: config)
                 } catch {
-                    // TODO: show error to user
+                    errorMessage = error.localizedDescription
+                    print("Container creation error: \(error)")
                 }
             }
         }) {
@@ -217,9 +219,16 @@ struct TemplateGridCard: View {
                     .font(.caption)
                     .foregroundColor(.primary)
                     .lineLimit(1)
-                Text("~\(template.estimatedSizeMB)MB")
-                    .font(.caption2)
-                    .foregroundColor(.secondary)
+                if let error = errorMessage {
+                    Text(error)
+                        .font(.system(size: 8))
+                        .foregroundColor(.red)
+                        .lineLimit(3)
+                } else {
+                    Text("~\(template.estimatedSizeMB)MB")
+                        .font(.caption2)
+                        .foregroundColor(.secondary)
+                }
             }
             .frame(maxWidth: .infinity)
             .padding(.vertical, 16)

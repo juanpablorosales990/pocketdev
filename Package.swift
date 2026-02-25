@@ -27,11 +27,19 @@ let package = Package(
             path: "Sources/Shared"
         ),
 
+        // MARK: - C PTY Support (pseudo-terminal for local shell)
+        .target(
+            name: "CPTYSupport",
+            path: "Sources/CPTYSupport",
+            publicHeadersPath: "include"
+        ),
+
         // MARK: - Platform Abstraction Layer
         .target(
             name: "PlatformAbstraction",
             dependencies: [
                 "Shared",
+                "CPTYSupport",
                 .product(name: "Logging", package: "swift-log"),
             ],
             path: "Sources/PlatformAbstraction"

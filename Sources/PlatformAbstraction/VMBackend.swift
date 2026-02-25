@@ -17,12 +17,17 @@ public protocol VMBackend: AnyObject, Sendable {
     /// Performance tier of this backend
     var performanceTier: PerformanceTier { get }
 
+    /// Whether this backend requires full VM setup (OCI pull, kernel, ext4 rootfs).
+    /// Returns false for local shell backends that spawn processes directly.
+    var requiresVMSetup: Bool { get }
+
     /// Create a new VM with the given configuration
     func createVM(config: VMConfig) async throws -> VirtualMachine
 
     /// Check if the hardware/OS supports this backend
     static func checkAvailability() -> BackendAvailability
 }
+
 
 // MARK: - Virtual Machine Protocol
 

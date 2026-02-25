@@ -15,6 +15,18 @@ public final class BackendSelector: Sendable {
     public static func detect(remoteServerURL: URL? = nil, remoteAPIKey: String? = nil) -> DetectionResult {
         var results: [(backend: any VMBackend, availability: BackendAvailability)] = []
 
+        // In the simulator, use LocalShellBackend for a real working terminal
+        #if targetEnvironment(simulator)
+        let localShell = LocalShellBackend()
+        let localAvail = LocalShellBackend.checkAvailability()
+        results.append((localShell, localAvail))
+        if localAvail.available {
+            let reason = "Selected Local Shell (simulator mode — real PTY terminal)"
+            PocketDevLogger.shared.info("\(reason)")
+            return DetectionResult(selectedBackend: localShell, allBackends: results, reason: reason)
+        }
+        #endif
+
         // Check Hypervisor.framework (best performance)
         let hypervisor = HypervisorBackend()
         let hypervisorAvail = HypervisorBackend.checkAvailability()

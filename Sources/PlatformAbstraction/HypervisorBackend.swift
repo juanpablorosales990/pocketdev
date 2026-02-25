@@ -13,6 +13,7 @@ import Hypervisor
 public final class HypervisorBackend: VMBackend, @unchecked Sendable {
     public let name = "Hypervisor.framework (Native)"
     public let performanceTier = PerformanceTier.native
+    public let requiresVMSetup = true
 
     public var isAvailable: Bool {
         Self.checkAvailability().available

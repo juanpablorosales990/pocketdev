@@ -9,6 +9,7 @@ import Shared
 public final class RemoteVMBackend: VMBackend, @unchecked Sendable {
     public let name = "Remote VM (Cloud)"
     public let performanceTier = PerformanceTier.remote
+    public let requiresVMSetup = true
 
     private let serverURL: URL
     private let apiKey: String?

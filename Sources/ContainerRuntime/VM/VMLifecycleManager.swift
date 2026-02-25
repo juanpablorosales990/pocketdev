@@ -35,24 +35,37 @@ public actor VMLifecycleManager {
 
         onProgress(.preparing)
 
-        // Get or create root filesystem from OCI image
-        let rootfsPath = try await prepareRootFilesystem(imageName: config.imageName, containerID: id, onProgress: onProgress)
+        let vmConfig: VMConfig
+        let rootfsPath: String
 
-        // Get kernel path
-        let kernelPath = try await kernelManager.ensureKernel()
+        if backend.requiresVMSetup {
+            // Full VM path: pull OCI image, build ext4 rootfs, get kernel
+            rootfsPath = try await prepareRootFilesystem(imageName: config.imageName, containerID: id, onProgress: onProgress)
+            let kernelPath = try await kernelManager.ensureKernel()
 
-        // Build VM config
-        let vmConfig = VMConfig(
-            id: id,
-            cpuCount: config.cpuCount,
-            memoryMB: config.memoryMB,
-            kernelPath: kernelPath,
-            rootFilesystemPath: rootfsPath,
-            sharedDirectories: config.mountPoints.map { mount in
-                SharedDirectory(hostPath: mount.hostPath, guestTag: mount.containerPath.replacingOccurrences(of: "/", with: "_"), readOnly: mount.readOnly)
-            },
-            kernelCommandLine: buildKernelCommandLine(config: config)
-        )
+            vmConfig = VMConfig(
+                id: id,
+                cpuCount: config.cpuCount,
+                memoryMB: config.memoryMB,
+                kernelPath: kernelPath,
+                rootFilesystemPath: rootfsPath,
+                sharedDirectories: config.mountPoints.map { mount in
+                    SharedDirectory(hostPath: mount.hostPath, guestTag: mount.containerPath.replacingOccurrences(of: "/", with: "_"), readOnly: mount.readOnly)
+                },
+                kernelCommandLine: buildKernelCommandLine(config: config)
+            )
+        } else {
+            // Local shell path: no rootfs or kernel needed
+            rootfsPath = ""
+            vmConfig = VMConfig(
+                id: id,
+                cpuCount: config.cpuCount,
+                memoryMB: config.memoryMB,
+                kernelPath: "",
+                rootFilesystemPath: "",
+                kernelCommandLine: ""
+            )
+        }
 
         // Create the VM
         onProgress(.creatingVM)
@@ -62,13 +75,14 @@ public actor VMLifecycleManager {
         onProgress(.booting)
         try await vm.boot()
 
-        // Configure networking inside the VM
-        onProgress(.configuringNetwork)
-        try await configureNetworking(vm: vm, config: config)
+        // Only configure networking/environment for real VMs
+        if backend.requiresVMSetup {
+            onProgress(.configuringNetwork)
+            try await configureNetworking(vm: vm, config: config)
 
-        // Configure environment
-        onProgress(.configuringEnvironment)
-        try await configureEnvironment(vm: vm, config: config)
+            onProgress(.configuringEnvironment)
+            try await configureEnvironment(vm: vm, config: config)
+        }
 
         let managed = ManagedContainer(
             config: config,
