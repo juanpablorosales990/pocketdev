@@ -172,8 +172,18 @@ final class LocalPTYProcess: VMProcess, @unchecked Sendable {
             shellPath = spec.executablePath
         }
 
-        // pty_spawn_shell is available via CPTYSupport module (SPM) or bridging header (Xcode)
-        masterFD = Int32(pty_spawn_shell(&childPid, UInt16(rows), UInt16(cols), shellPath))
+        // Set up a home directory for the terminal inside the app sandbox
+        let homeDir = Self.setupHomeDirectory()
+
+        // Use extended spawn with custom HOME and working directory
+        masterFD = Int32(pty_spawn_shell_ex(
+            &childPid,
+            UInt16(rows),
+            UInt16(cols),
+            shellPath,
+            homeDir,
+            homeDir + "/projects"
+        ))
 
         guard masterFD >= 0 else {
             throw PocketDevError.processSpawnFailed("Failed to create PTY (errno: \(errno))")
@@ -186,6 +196,45 @@ final class LocalPTYProcess: VMProcess, @unchecked Sendable {
 
         // Start background thread to read PTY output
         startReadLoop()
+
+        // Send initialization commands after shell is ready
+        sendInitCommands()
+    }
+
+    private static func setupHomeDirectory() -> String {
+        let docs = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
+        let homeDir = docs.appendingPathComponent("home").path
+
+        // Create home directory structure
+        let fm = FileManager.default
+        try? fm.createDirectory(atPath: homeDir, withIntermediateDirectories: true)
+        try? fm.createDirectory(atPath: homeDir + "/projects", withIntermediateDirectories: true)
+
+        // Always write .zshrc to ensure prompt is correct
+        let zshrc = homeDir + "/.zshrc"
+        let rcContent = """
+        # PocketDev Terminal
+        PROMPT='%F{cyan}pocketdev%f %F{blue}%~%f %F{green}❯%f '
+        export CLICOLOR=1
+        export LSCOLORS=GxFxCxDxBxegedabagaced
+        export PATH="/usr/local/bin:/opt/homebrew/bin:$PATH"
+        alias ll='ls -la'
+        alias la='ls -a'
+        alias cls='clear'
+        """
+        try? rcContent.write(toFile: zshrc, atomically: true, encoding: .utf8)
+
+        // Also write .zshenv for earliest possible ZDOTDIR override
+        let zshenv = homeDir + "/.zshenv"
+        let envContent = "# PocketDev\n"
+        try? envContent.write(toFile: zshenv, atomically: true, encoding: .utf8)
+
+        // Write .zprofile to prevent system profile from overriding
+        let zprofile = homeDir + "/.zprofile"
+        let profileContent = "# PocketDev - prevent system profile override\n"
+        try? profileContent.write(toFile: zprofile, atomically: true, encoding: .utf8)
+
+        return homeDir
     }
 
     func write(_ data: Data) async throws {
@@ -237,6 +286,30 @@ final class LocalPTYProcess: VMProcess, @unchecked Sendable {
     }
 
     // MARK: - Private
+
+    private func sendInitCommands() {
+        let fd = masterFD
+        let thread = Thread {
+            Thread.sleep(forTimeInterval: 1.5)
+
+            let commands = [
+                "export PROMPT='%F{cyan}pocketdev%f %F{blue}%~%f %F{green}\u{276f}%f '",
+                "export PATH=/opt/homebrew/bin:/usr/local/bin:$PATH",
+                "alias ll='ls -la'",
+                "alias la='ls -a'",
+                "clear"
+            ]
+            for cmd in commands {
+                let line: [UInt8] = Array((cmd + "\r").utf8)
+                line.withUnsafeBufferPointer { buf in
+                    _ = pty_write_data(fd, buf.baseAddress!, UInt(buf.count))
+                }
+                Thread.sleep(forTimeInterval: 0.1)
+            }
+        }
+        thread.name = "PTY-Init"
+        thread.start()
+    }
 
     private func startReadLoop() {
         let fd = masterFD

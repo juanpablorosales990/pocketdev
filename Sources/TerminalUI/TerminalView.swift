@@ -12,26 +12,32 @@ import UIKit
 public struct TerminalView: View {
     @ObservedObject var buffer: TerminalBuffer
     let onInput: (Data) -> Void
+    var onResize: ((Int, Int) -> Void)?
 
-    @State private var fontSize: CGFloat = 14
+    @State private var fontSize: CGFloat = 13
     @State private var scrollOffset: CGFloat = 0
     @State private var isSelecting = false
     @State private var selectionStart: (row: Int, col: Int)?
     @State private var selectionEnd: (row: Int, col: Int)?
+    @State private var lastCols: Int = 0
+    @State private var lastRows: Int = 0
     @FocusState private var isFocused: Bool
 
     private let fontName = "Menlo"
     private let cellPadding: CGFloat = 0
 
-    public init(buffer: TerminalBuffer, onInput: @escaping (Data) -> Void) {
+    public init(buffer: TerminalBuffer, onInput: @escaping (Data) -> Void, onResize: ((Int, Int) -> Void)? = nil) {
         self.buffer = buffer
         self.onInput = onInput
+        self.onResize = onResize
     }
 
     public var body: some View {
         GeometryReader { geometry in
             let cellWidth = charWidth(size: fontSize)
-            let cellHeight = fontSize * 1.2
+            let cellHeight = fontSize * 1.4
+            let cols = max(20, Int(geometry.size.width / cellWidth))
+            let rows = max(5, Int(geometry.size.height / cellHeight))
 
             ZStack(alignment: .topLeading) {
                 // Background
@@ -40,22 +46,22 @@ public struct TerminalView: View {
 
                 // Scrollback + visible buffer
                 ScrollViewReader { scrollProxy in
-                    ScrollView(.vertical, showsIndicators: true) {
+                    ScrollView(.vertical, showsIndicators: false) {
                         VStack(spacing: 0) {
                             // Scrollback lines
                             ForEach(Array(buffer.scrollbackLines.enumerated()), id: \.offset) { index, line in
-                                terminalLine(line, rowIndex: -(buffer.scrollbackLines.count - index), cellWidth: cellWidth, cellHeight: cellHeight)
+                                terminalLine(line, rowIndex: -(buffer.scrollbackLines.count - index), cellWidth: cellWidth, cellHeight: cellHeight, maxCols: cols)
                             }
 
                             // Visible buffer lines
                             ForEach(0..<buffer.rows, id: \.self) { row in
                                 ZStack(alignment: .leading) {
-                                    terminalLine(buffer.lines[row], rowIndex: row, cellWidth: cellWidth, cellHeight: cellHeight)
+                                    terminalLine(buffer.lines[row], rowIndex: row, cellWidth: cellWidth, cellHeight: cellHeight, maxCols: cols)
 
-                                    // Cursor
+                                    // Cursor — white block like Terminal.app
                                     if buffer.cursorVisible && row == buffer.cursorRow {
                                         Rectangle()
-                                            .fill(Color.green.opacity(0.8))
+                                            .fill(Color.white.opacity(0.85))
                                             .frame(width: cellWidth, height: cellHeight)
                                             .offset(x: CGFloat(buffer.cursorCol) * cellWidth)
                                             .blendMode(.screen)
@@ -103,15 +109,27 @@ public struct TerminalView: View {
             )
             .onAppear {
                 isFocused = true
+                resizeIfNeeded(cols: cols, rows: rows)
             }
+            .onChange(of: geometry.size) { _ in
+                resizeIfNeeded(cols: cols, rows: rows)
+            }
+        }
+    }
+
+    private func resizeIfNeeded(cols: Int, rows: Int) {
+        if cols != lastCols || rows != lastRows {
+            lastCols = cols
+            lastRows = rows
+            onResize?(cols, rows)
         }
     }
 
     // MARK: - Line Rendering
 
-    private func terminalLine(_ cells: [TerminalCell], rowIndex: Int, cellWidth: CGFloat, cellHeight: CGFloat) -> some View {
+    private func terminalLine(_ cells: [TerminalCell], rowIndex: Int, cellWidth: CGFloat, cellHeight: CGFloat, maxCols: Int = 80) -> some View {
         HStack(spacing: 0) {
-            ForEach(0..<cells.count, id: \.self) { col in
+            ForEach(0..<min(cells.count, maxCols), id: \.self) { col in
                 let cell = cells[col]
                 let isSelected = isCellSelected(row: rowIndex, col: col)
 
@@ -136,12 +154,13 @@ public struct TerminalView: View {
         if cell.dim {
             return cell.foreground.swiftUIColor.opacity(0.6)
         }
-        return cell.foreground == .default ? .green : cell.foreground.swiftUIColor
+        // White text on black background — like Terminal.app
+        return cell.foreground == .default ? Color(white: 0.9) : cell.foreground.swiftUIColor
     }
 
     private func cellBackgroundColor(_ cell: TerminalCell) -> Color {
         if cell.inverse {
-            return cell.foreground == .default ? .green : cell.foreground.swiftUIColor
+            return cell.foreground == .default ? Color(white: 0.9) : cell.foreground.swiftUIColor
         }
         return cell.background == .default ? .clear : cell.background.swiftUIColor
     }
@@ -214,6 +233,18 @@ class TerminalInputUIView: UIView, UIKeyInput {
     override var canBecomeFirstResponder: Bool { true }
     var hasText: Bool { false }
 
+    // Enable paste
+    override func canPerformAction(_ action: Selector, withSender sender: Any?) -> Bool {
+        if action == #selector(paste(_:)) { return true }
+        return super.canPerformAction(action, withSender: sender)
+    }
+
+    @objc override func paste(_ sender: Any?) {
+        if let text = UIPasteboard.general.string, let data = text.data(using: .utf8) {
+            onInput?(data)
+        }
+    }
+
     // Support hardware keyboard
     override var keyCommands: [UIKeyCommand]? {
         var commands: [UIKeyCommand] = []
@@ -226,6 +257,9 @@ class TerminalInputUIView: UIView, UIKeyInput {
                 action: #selector(handleCtrlKey(_:))
             ))
         }
+
+        // Cmd+V for paste
+        commands.append(UIKeyCommand(input: "v", modifierFlags: .command, action: #selector(handlePaste)))
 
         // Special keys
         commands.append(UIKeyCommand(input: UIKeyCommand.inputUpArrow, modifierFlags: [], action: #selector(handleArrowKey(_:))))
@@ -274,6 +308,12 @@ class TerminalInputUIView: UIView, UIKeyInput {
 
     @objc func handleTab() {
         onInput?(Data([0x09]))
+    }
+
+    @objc func handlePaste() {
+        if let text = UIPasteboard.general.string, let data = text.data(using: .utf8) {
+            onInput?(data)
+        }
     }
 
     // Handle Enter key

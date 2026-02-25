@@ -8,6 +8,10 @@
 /// child_pid is set to the PID of the spawned shell process.
 int pty_spawn_shell(pid_t *child_pid, unsigned short rows, unsigned short cols, const char *shell_path);
 
+/// Spawn a shell with custom HOME directory and working directory.
+int pty_spawn_shell_ex(pid_t *child_pid, unsigned short rows, unsigned short cols,
+                       const char *shell_path, const char *home_dir, const char *work_dir);
+
 /// Write data to the PTY master fd.
 long pty_write_data(int master_fd, const void *buf, unsigned long count);
 

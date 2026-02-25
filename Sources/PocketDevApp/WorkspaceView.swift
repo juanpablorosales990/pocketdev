@@ -70,9 +70,11 @@ struct WorkspaceView: View {
         Group {
             if let containerID = appState.activeContainerID,
                let session = appState.terminalSessions[containerID] {
-                TerminalView(buffer: session.buffer) { data in
+                TerminalView(buffer: session.buffer, onInput: { data in
                     session.sendInput(data)
-                }
+                }, onResize: { cols, rows in
+                    session.resize(columns: cols, rows: rows)
+                })
             } else {
                 VStack {
                     Image(systemName: "terminal")

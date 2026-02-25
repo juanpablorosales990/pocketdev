@@ -77,6 +77,8 @@ int pty_spawn_shell(pid_t *child_pid, unsigned short rows, unsigned short cols, 
         setenv("TERM", "xterm-256color", 1);
         setenv("LANG", "en_US.UTF-8", 1);
         setenv("COLORTERM", "truecolor", 1);
+        setenv("CLICOLOR", "1", 1);
+        setenv("LSCOLORS", "GxFxCxDxBxegedabagaced", 1);
 
         // Try the requested shell first
         if (shell_path && strlen(shell_path) > 0) {
@@ -102,6 +104,76 @@ int pty_spawn_shell(pid_t *child_pid, unsigned short rows, unsigned short cols, 
         fcntl(master_fd, F_SETFL, flags | O_NONBLOCK);
     }
 
+    return master_fd;
+}
+
+int pty_spawn_shell_ex(pid_t *child_pid, unsigned short rows, unsigned short cols,
+                       const char *shell_path, const char *home_dir, const char *work_dir) {
+    int master_fd = posix_openpt(O_RDWR | O_NOCTTY);
+    if (master_fd < 0) return -1;
+    if (grantpt(master_fd) < 0) { close(master_fd); return -1; }
+    if (unlockpt(master_fd) < 0) { close(master_fd); return -1; }
+    char *slave_name = ptsname(master_fd);
+    if (!slave_name) { close(master_fd); return -1; }
+
+    struct winsize ws;
+    memset(&ws, 0, sizeof(ws));
+    ws.ws_row = rows;
+    ws.ws_col = cols;
+    ioctl(master_fd, TIOCSWINSZ, &ws);
+
+    pid_t pid = fork();
+    if (pid < 0) { close(master_fd); return -1; }
+
+    if (pid == 0) {
+        // === Child process ===
+        close(master_fd);
+        setsid();
+        int slave_fd = open(slave_name, O_RDWR);
+        if (slave_fd < 0) _exit(1);
+        ioctl(slave_fd, TIOCSCTTY, 0);
+        ioctl(slave_fd, TIOCSWINSZ, &ws);
+        dup2(slave_fd, STDIN_FILENO);
+        dup2(slave_fd, STDOUT_FILENO);
+        dup2(slave_fd, STDERR_FILENO);
+        if (slave_fd > STDERR_FILENO) close(slave_fd);
+
+        // Set environment for phone-like experience
+        setenv("TERM", "xterm-256color", 1);
+        setenv("LANG", "en_US.UTF-8", 1);
+        setenv("COLORTERM", "truecolor", 1);
+        setenv("CLICOLOR", "1", 1);
+        setenv("LSCOLORS", "GxFxCxDxBxegedabagaced", 1);
+
+        if (home_dir && strlen(home_dir) > 0) {
+            setenv("HOME", home_dir, 1);
+            setenv("ZDOTDIR", home_dir, 1);
+            setenv("USER", "pocketdev", 1);
+            setenv("LOGNAME", "pocketdev", 1);
+        }
+
+        // Change working directory
+        if (work_dir && strlen(work_dir) > 0) {
+            chdir(work_dir);
+        } else if (home_dir && strlen(home_dir) > 0) {
+            chdir(home_dir);
+        }
+
+        // Launch shell
+        if (shell_path && strlen(shell_path) > 0) {
+            const char *shell_name = strrchr(shell_path, '/');
+            shell_name = shell_name ? shell_name + 1 : shell_path;
+            execl(shell_path, shell_name, "-l", (char *)NULL);
+        }
+        execl("/bin/zsh", "zsh", "-l", (char *)NULL);
+        execl("/bin/bash", "bash", "-l", (char *)NULL);
+        execl("/bin/sh", "sh", "-l", (char *)NULL);
+        _exit(1);
+    }
+
+    *child_pid = pid;
+    int flags = fcntl(master_fd, F_GETFL, 0);
+    if (flags >= 0) fcntl(master_fd, F_SETFL, flags | O_NONBLOCK);
     return master_fd;
 }
 
