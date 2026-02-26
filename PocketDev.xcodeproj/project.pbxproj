@@ -1,0 +1,661 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		012345F91480C388909E5682 /* Types.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4FE07D0C4ED1A1076E1EA393 /* Types.swift */; };
+		032AC46DD6ED3F17567E719A /* AppState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A58D442AC86DE96C62516B2 /* AppState.swift */; };
+		061DCBBDFFE55A0947A6F432 /* ImageStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2F5F7234577B1ED01E746D7 /* ImageStore.swift */; };
+		07DA08B0DBED9EFBE6E6F9E6 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC5F1D3AADFD0D2D1F676218 /* HomeView.swift */; };
+		137E5D0A0B3D40B28A7532CB /* PocketDevApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6CCE163A88EB612C9E8667F4 /* PocketDevApp.swift */; };
+		14E6E45AC69D8FBA63A86503 /* BackendSelector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3624C106FEE59D7FF65BDA8A /* BackendSelector.swift */; };
+		1BF1E2B28FA83990D30E36AE /* TerminalView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21AC40A51FB99D8BDF7DC689 /* TerminalView.swift */; };
+		2E2A92DAF1BA94E10A0CEEF5 /* VMBackend.swift in Sources */ = {isa = PBXBuildFile; fileRef = B64FAD2BEDF1E983CB7762C8 /* VMBackend.swift */; };
+		2FA24F07854A0AF4CE1BF5CF /* FileBrowser.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7BB2C0003131CDDB5E75BF9 /* FileBrowser.swift */; };
+		3479EFB3529D689D75662430 /* BackendSelectorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA4AFD5967E96729E108365C /* BackendSelectorTests.swift */; };
+		397F5C9659B9B2CFFC07BD7F /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 388EF89B2FD85651FA444E61 /* ContentView.swift */; };
+		464B8DEB6E6B333CF76F52AC /* NetworkManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4FECB7AF7186612208D1853B /* NetworkManager.swift */; };
+		502B93E41298A5A5759F4884 /* KernelManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E35E7873482C1C7FB8A0BDE /* KernelManager.swift */; };
+		5BB4BC881F1CB76D2DF99DF2 /* RemoteVMBackend.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB891616ECA109E91E963945 /* RemoteVMBackend.swift */; };
+		5E4E08AB46EFDAC603888392 /* VMLifecycleManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E34A620012F08BA094D3D58A /* VMLifecycleManager.swift */; };
+		6EF95883F0DF9CF0FC089E67 /* Logger.swift in Sources */ = {isa = PBXBuildFile; fileRef = F18019507719B099B5E20EAB /* Logger.swift */; };
+		77FA7E97EB7C545E14FC204B /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7059C72BA9B04B519E0E7421 /* SettingsView.swift */; };
+		7F9030457A55F2D95902ECF8 /* OCIRegistryClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9880CB5702ED1C586BD7FA47 /* OCIRegistryClient.swift */; };
+		8DF3B754C085470DA46787C6 /* HypervisorBackend.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2767607935A5B3F828B8C32D /* HypervisorBackend.swift */; };
+		AB48FC47F29A961A448DE603 /* pty_support.c in Sources */ = {isa = PBXBuildFile; fileRef = E444A381605279839EBEDA82 /* pty_support.c */; };
+		AF6B7EF83699069ED0BDCB1E /* QEMUTCGBackend.swift in Sources */ = {isa = PBXBuildFile; fileRef = 842F17BD7729B096A4EF64C8 /* QEMUTCGBackend.swift */; };
+		CF4949A803BD13B8F5672F66 /* OCITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7CA53D291DEEDCAF3DB0D10 /* OCITests.swift */; };
+		D7DE6E891044913A25377FAD /* EXT4Builder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 282E771848CA8A4519618F10 /* EXT4Builder.swift */; };
+		E8820D718D1B58CD5C7EC2AB /* LocalShellBackend.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9D5379BD757EC7CC2EAC53B /* LocalShellBackend.swift */; };
+		EED59B41F3B6389C9B8A2BD0 /* PlatformColors.swift in Sources */ = {isa = PBXBuildFile; fileRef = B28F8915677720A8C5AAB140 /* PlatformColors.swift */; };
+		F4074D0569472AA51238C0B8 /* WorkspaceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6A82001EA6E61E2EAD8D371E /* WorkspaceView.swift */; };
+		FA1B2C3D4E5F67890A1B2C3D /* SwiftTerm in Frameworks */ = {isa = PBXBuildFile; productRef = D1E2F3A4B5C6D7E8F9001122 /* SwiftTerm */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		5143F06E71623AE27B5D3D4C /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 9B56FFAB358A24C701361E0C /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = A914BF257C35CF29E3DE51D4;
+			remoteInfo = PocketDev;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		21AC40A51FB99D8BDF7DC689 /* TerminalView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TerminalView.swift; sourceTree = "<group>"; };
+		2767607935A5B3F828B8C32D /* HypervisorBackend.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HypervisorBackend.swift; sourceTree = "<group>"; };
+		282E771848CA8A4519618F10 /* EXT4Builder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EXT4Builder.swift; sourceTree = "<group>"; };
+		3624C106FEE59D7FF65BDA8A /* BackendSelector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackendSelector.swift; sourceTree = "<group>"; };
+		388EF89B2FD85651FA444E61 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		4FE07D0C4ED1A1076E1EA393 /* Types.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Types.swift; sourceTree = "<group>"; };
+		4FECB7AF7186612208D1853B /* NetworkManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkManager.swift; sourceTree = "<group>"; };
+		6A82001EA6E61E2EAD8D371E /* WorkspaceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkspaceView.swift; sourceTree = "<group>"; };
+		6CCE163A88EB612C9E8667F4 /* PocketDevApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PocketDevApp.swift; sourceTree = "<group>"; };
+		7059C72BA9B04B519E0E7421 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		76D42ECFFF0EF819347F3FFC /* PocketDevTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = PocketDevTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		842F17BD7729B096A4EF64C8 /* QEMUTCGBackend.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QEMUTCGBackend.swift; sourceTree = "<group>"; };
+		8A58D442AC86DE96C62516B2 /* AppState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppState.swift; sourceTree = "<group>"; };
+		8E35E7873482C1C7FB8A0BDE /* KernelManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KernelManager.swift; sourceTree = "<group>"; };
+		9880CB5702ED1C586BD7FA47 /* OCIRegistryClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OCIRegistryClient.swift; sourceTree = "<group>"; };
+		AB891616ECA109E91E963945 /* RemoteVMBackend.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteVMBackend.swift; sourceTree = "<group>"; };
+		AF19D7C75034BEAC5220DA6B /* pty_support.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = pty_support.h; sourceTree = "<group>"; };
+		B28F8915677720A8C5AAB140 /* PlatformColors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlatformColors.swift; sourceTree = "<group>"; };
+		B64FAD2BEDF1E983CB7762C8 /* VMBackend.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMBackend.swift; sourceTree = "<group>"; };
+		BA4AFD5967E96729E108365C /* BackendSelectorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackendSelectorTests.swift; sourceTree = "<group>"; };
+		C2F5F7234577B1ED01E746D7 /* ImageStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageStore.swift; sourceTree = "<group>"; };
+		C7BB2C0003131CDDB5E75BF9 /* FileBrowser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileBrowser.swift; sourceTree = "<group>"; };
+		D7CA53D291DEEDCAF3DB0D10 /* OCITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OCITests.swift; sourceTree = "<group>"; };
+		D87871D5CDCD84FFB90C7AC3 /* PocketDev.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = PocketDev.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		DC5F1D3AADFD0D2D1F676218 /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
+		E34A620012F08BA094D3D58A /* VMLifecycleManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMLifecycleManager.swift; sourceTree = "<group>"; };
+		E444A381605279839EBEDA82 /* pty_support.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = pty_support.c; sourceTree = "<group>"; };
+		E9D5379BD757EC7CC2EAC53B /* LocalShellBackend.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalShellBackend.swift; sourceTree = "<group>"; };
+		F18019507719B099B5E20EAB /* Logger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Logger.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		FB2C3D4E5F67890A1B2C3D4E /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				FA1B2C3D4E5F67890A1B2C3D /* SwiftTerm in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		23E3B8EB920A3F5ED90FC81E /* include */ = {
+			isa = PBXGroup;
+			children = (
+				AF19D7C75034BEAC5220DA6B /* pty_support.h */,
+			);
+			path = include;
+			sourceTree = "<group>";
+		};
+		2653BA918A42D4F385033C9C /* ContainerRuntime */ = {
+			isa = PBXGroup;
+			children = (
+				F3453A5A8A162A507033BA13 /* Filesystem */,
+				337408185D5B9A7F004B89DC /* OCI */,
+				D43FDFC7AB1E2EAD56D8C729 /* VM */,
+			);
+			path = ContainerRuntime;
+			sourceTree = "<group>";
+		};
+		337408185D5B9A7F004B89DC /* OCI */ = {
+			isa = PBXGroup;
+			children = (
+				C2F5F7234577B1ED01E746D7 /* ImageStore.swift */,
+				9880CB5702ED1C586BD7FA47 /* OCIRegistryClient.swift */,
+			);
+			path = OCI;
+			sourceTree = "<group>";
+		};
+		3C0FCABB18896B7846E67673 /* Sources */ = {
+			isa = PBXGroup;
+			children = (
+				2653BA918A42D4F385033C9C /* ContainerRuntime */,
+				8B009FCE87657C99CABB1927 /* CPTYSupport */,
+				C30EC922D8D03BF06706023F /* FileManager */,
+				BA2EBA9966CDB7BD69767E49 /* NetworkManager */,
+				FF3335291A26D9D5D96E8BDC /* PlatformAbstraction */,
+				D4F25291B66057C5D76F1705 /* PocketDevApp */,
+				867D7C6ACC71D065F69AF5F4 /* Shared */,
+				A68CD34F5B23009AB37A297A /* TerminalUI */,
+			);
+			path = Sources;
+			sourceTree = "<group>";
+		};
+		61962E1F7B376581E4C0FDA6 /* ContainerRuntimeTests */ = {
+			isa = PBXGroup;
+			children = (
+				D7CA53D291DEEDCAF3DB0D10 /* OCITests.swift */,
+			);
+			path = ContainerRuntimeTests;
+			sourceTree = "<group>";
+		};
+		6B546D133395F552B177514D = {
+			isa = PBXGroup;
+			children = (
+				3C0FCABB18896B7846E67673 /* Sources */,
+				F7533E452CBA2A7DB9E90185 /* Tests */,
+				A043D45E1F35080DF972FB33 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		867D7C6ACC71D065F69AF5F4 /* Shared */ = {
+			isa = PBXGroup;
+			children = (
+				F18019507719B099B5E20EAB /* Logger.swift */,
+				B28F8915677720A8C5AAB140 /* PlatformColors.swift */,
+				4FE07D0C4ED1A1076E1EA393 /* Types.swift */,
+			);
+			path = Shared;
+			sourceTree = "<group>";
+		};
+		8B009FCE87657C99CABB1927 /* CPTYSupport */ = {
+			isa = PBXGroup;
+			children = (
+				E444A381605279839EBEDA82 /* pty_support.c */,
+				23E3B8EB920A3F5ED90FC81E /* include */,
+			);
+			path = CPTYSupport;
+			sourceTree = "<group>";
+		};
+		A043D45E1F35080DF972FB33 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				D87871D5CDCD84FFB90C7AC3 /* PocketDev.app */,
+				76D42ECFFF0EF819347F3FFC /* PocketDevTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		A68CD34F5B23009AB37A297A /* TerminalUI */ = {
+			isa = PBXGroup;
+			children = (
+				21AC40A51FB99D8BDF7DC689 /* TerminalView.swift */,
+			);
+			path = TerminalUI;
+			sourceTree = "<group>";
+		};
+		BA2EBA9966CDB7BD69767E49 /* NetworkManager */ = {
+			isa = PBXGroup;
+			children = (
+				4FECB7AF7186612208D1853B /* NetworkManager.swift */,
+			);
+			path = NetworkManager;
+			sourceTree = "<group>";
+		};
+		C30EC922D8D03BF06706023F /* FileManager */ = {
+			isa = PBXGroup;
+			children = (
+				C7BB2C0003131CDDB5E75BF9 /* FileBrowser.swift */,
+			);
+			path = FileManager;
+			sourceTree = "<group>";
+		};
+		CB028223DD9CA3CF01F0056E /* PlatformAbstractionTests */ = {
+			isa = PBXGroup;
+			children = (
+				BA4AFD5967E96729E108365C /* BackendSelectorTests.swift */,
+			);
+			path = PlatformAbstractionTests;
+			sourceTree = "<group>";
+		};
+		D43FDFC7AB1E2EAD56D8C729 /* VM */ = {
+			isa = PBXGroup;
+			children = (
+				8E35E7873482C1C7FB8A0BDE /* KernelManager.swift */,
+				E34A620012F08BA094D3D58A /* VMLifecycleManager.swift */,
+			);
+			path = VM;
+			sourceTree = "<group>";
+		};
+		D4F25291B66057C5D76F1705 /* PocketDevApp */ = {
+			isa = PBXGroup;
+			children = (
+				8A58D442AC86DE96C62516B2 /* AppState.swift */,
+				388EF89B2FD85651FA444E61 /* ContentView.swift */,
+				DC5F1D3AADFD0D2D1F676218 /* HomeView.swift */,
+				6CCE163A88EB612C9E8667F4 /* PocketDevApp.swift */,
+				7059C72BA9B04B519E0E7421 /* SettingsView.swift */,
+				6A82001EA6E61E2EAD8D371E /* WorkspaceView.swift */,
+			);
+			path = PocketDevApp;
+			sourceTree = "<group>";
+		};
+		F3453A5A8A162A507033BA13 /* Filesystem */ = {
+			isa = PBXGroup;
+			children = (
+				282E771848CA8A4519618F10 /* EXT4Builder.swift */,
+			);
+			path = Filesystem;
+			sourceTree = "<group>";
+		};
+		F7533E452CBA2A7DB9E90185 /* Tests */ = {
+			isa = PBXGroup;
+			children = (
+				61962E1F7B376581E4C0FDA6 /* ContainerRuntimeTests */,
+				CB028223DD9CA3CF01F0056E /* PlatformAbstractionTests */,
+			);
+			path = Tests;
+			sourceTree = "<group>";
+		};
+		FF3335291A26D9D5D96E8BDC /* PlatformAbstraction */ = {
+			isa = PBXGroup;
+			children = (
+				3624C106FEE59D7FF65BDA8A /* BackendSelector.swift */,
+				2767607935A5B3F828B8C32D /* HypervisorBackend.swift */,
+				E9D5379BD757EC7CC2EAC53B /* LocalShellBackend.swift */,
+				842F17BD7729B096A4EF64C8 /* QEMUTCGBackend.swift */,
+				AB891616ECA109E91E963945 /* RemoteVMBackend.swift */,
+				B64FAD2BEDF1E983CB7762C8 /* VMBackend.swift */,
+			);
+			path = PlatformAbstraction;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		A0B57E5F798B863961E36662 /* PocketDevTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = E46000CA53E00747480222DD /* Build configuration list for PBXNativeTarget "PocketDevTests" */;
+			buildPhases = (
+				3C82581DDF02619FDCF177C0 /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				89011F5A99FCC3D48B89D1A4 /* PBXTargetDependency */,
+			);
+			name = PocketDevTests;
+			packageProductDependencies = (
+			);
+			productName = PocketDevTests;
+			productReference = 76D42ECFFF0EF819347F3FFC /* PocketDevTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		A914BF257C35CF29E3DE51D4 /* PocketDev */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 586E3329C95AAE69412E02BA /* Build configuration list for PBXNativeTarget "PocketDev" */;
+			buildPhases = (
+				DB423E731C7EA97DF46EDC02 /* Sources */,
+				FB2C3D4E5F67890A1B2C3D4E /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = PocketDev;
+			packageProductDependencies = (
+				D1E2F3A4B5C6D7E8F9001122 /* SwiftTerm */,
+			);
+			productName = PocketDev;
+			productReference = D87871D5CDCD84FFB90C7AC3 /* PocketDev.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		9B56FFAB358A24C701361E0C /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1640;
+				TargetAttributes = {
+					A914BF257C35CF29E3DE51D4 = {
+						DevelopmentTeam = "";
+						ProvisioningStyle = Automatic;
+					};
+				};
+			};
+			buildConfigurationList = FF02E42B994B9CBFB54473FF /* Build configuration list for PBXProject "PocketDev" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				en,
+			);
+			mainGroup = 6B546D133395F552B177514D;
+			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				A1B2C3D4E5F60718293A4B5C /* XCRemoteSwiftPackageReference "SwiftTerm" */,
+			);
+			preferredProjectObjectVersion = 77;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				A914BF257C35CF29E3DE51D4 /* PocketDev */,
+				A0B57E5F798B863961E36662 /* PocketDevTests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		3C82581DDF02619FDCF177C0 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				3479EFB3529D689D75662430 /* BackendSelectorTests.swift in Sources */,
+				CF4949A803BD13B8F5672F66 /* OCITests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		DB423E731C7EA97DF46EDC02 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				032AC46DD6ED3F17567E719A /* AppState.swift in Sources */,
+				14E6E45AC69D8FBA63A86503 /* BackendSelector.swift in Sources */,
+				397F5C9659B9B2CFFC07BD7F /* ContentView.swift in Sources */,
+				D7DE6E891044913A25377FAD /* EXT4Builder.swift in Sources */,
+				2FA24F07854A0AF4CE1BF5CF /* FileBrowser.swift in Sources */,
+				07DA08B0DBED9EFBE6E6F9E6 /* HomeView.swift in Sources */,
+				8DF3B754C085470DA46787C6 /* HypervisorBackend.swift in Sources */,
+				061DCBBDFFE55A0947A6F432 /* ImageStore.swift in Sources */,
+				502B93E41298A5A5759F4884 /* KernelManager.swift in Sources */,
+				E8820D718D1B58CD5C7EC2AB /* LocalShellBackend.swift in Sources */,
+				6EF95883F0DF9CF0FC089E67 /* Logger.swift in Sources */,
+				464B8DEB6E6B333CF76F52AC /* NetworkManager.swift in Sources */,
+				7F9030457A55F2D95902ECF8 /* OCIRegistryClient.swift in Sources */,
+				EED59B41F3B6389C9B8A2BD0 /* PlatformColors.swift in Sources */,
+				137E5D0A0B3D40B28A7532CB /* PocketDevApp.swift in Sources */,
+				AF6B7EF83699069ED0BDCB1E /* QEMUTCGBackend.swift in Sources */,
+				5BB4BC881F1CB76D2DF99DF2 /* RemoteVMBackend.swift in Sources */,
+				77FA7E97EB7C545E14FC204B /* SettingsView.swift in Sources */,
+				1BF1E2B28FA83990D30E36AE /* TerminalView.swift in Sources */,
+				012345F91480C388909E5682 /* Types.swift in Sources */,
+				2E2A92DAF1BA94E10A0CEEF5 /* VMBackend.swift in Sources */,
+				5E4E08AB46EFDAC603888392 /* VMLifecycleManager.swift in Sources */,
+				F4074D0569472AA51238C0B8 /* WorkspaceView.swift in Sources */,
+				AB48FC47F29A961A448DE603 /* pty_support.c in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		89011F5A99FCC3D48B89D1A4 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = A914BF257C35CF29E3DE51D4 /* PocketDev */;
+			targetProxy = 5143F06E71623AE27B5D3D4C /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		19A32C6EB723E5594720C320 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.pocketdev.tests;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/PocketDev.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/PocketDev";
+			};
+			name = Release;
+		};
+		3FCCF7F92E37FC7786F257E6 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SUPPORTS_MACCATALYST = NO;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.9;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		40558C7AB276ABBD59D085E6 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SUPPORTS_MACCATALYST = NO;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.9;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		A318DF7EF819A65D6333CB27 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = PocketDev.entitlements;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = "";
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				HEADER_SEARCH_PATHS = "$(SRCROOT)/Sources/CPTYSupport/include";
+				INFOPLIST_KEY_CFBundleDisplayName = PocketDev;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = UIInterfaceOrientationAllButUpsideDown;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				MARKETING_VERSION = 1.0.0;
+				OTHER_LDFLAGS = "-lz";
+				PRODUCT_BUNDLE_IDENTIFIER = com.pocketdev.app;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OBJC_BRIDGING_HEADER = Sources/BridgingHeader.h;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		BAA7E2430FE0B6C45029878F /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.pocketdev.tests;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/PocketDev.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/PocketDev";
+			};
+			name = Debug;
+		};
+		F0C3AD44C6B72E9F7EF16EE1 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = PocketDev.entitlements;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = "";
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				HEADER_SEARCH_PATHS = "$(SRCROOT)/Sources/CPTYSupport/include";
+				INFOPLIST_KEY_CFBundleDisplayName = PocketDev;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = UIInterfaceOrientationAllButUpsideDown;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				MARKETING_VERSION = 1.0.0;
+				OTHER_LDFLAGS = "-lz";
+				PRODUCT_BUNDLE_IDENTIFIER = com.pocketdev.app;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OBJC_BRIDGING_HEADER = Sources/BridgingHeader.h;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		586E3329C95AAE69412E02BA /* Build configuration list for PBXNativeTarget "PocketDev" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F0C3AD44C6B72E9F7EF16EE1 /* Debug */,
+				A318DF7EF819A65D6333CB27 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		E46000CA53E00747480222DD /* Build configuration list for PBXNativeTarget "PocketDevTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				BAA7E2430FE0B6C45029878F /* Debug */,
+				19A32C6EB723E5594720C320 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		FF02E42B994B9CBFB54473FF /* Build configuration list for PBXProject "PocketDev" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				40558C7AB276ABBD59D085E6 /* Debug */,
+				3FCCF7F92E37FC7786F257E6 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		A1B2C3D4E5F60718293A4B5C /* XCRemoteSwiftPackageReference "SwiftTerm" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/migueldeicaza/SwiftTerm.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.2.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		D1E2F3A4B5C6D7E8F9001122 /* SwiftTerm */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = A1B2C3D4E5F60718293A4B5C /* XCRemoteSwiftPackageReference "SwiftTerm" */;
+			productName = SwiftTerm;
+		};
+/* End XCSwiftPackageProductDependency section */
+	};
+	rootObject = 9B56FFAB358A24C701361E0C /* Project object */;
+}
