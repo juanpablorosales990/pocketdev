@@ -101,9 +101,11 @@ public final class FileBrowserViewModel: ObservableObject {
 
         do {
             let safePath = path.replacingOccurrences(of: "'", with: "'\\''")
+            // Cross-platform: works on both macOS (simulator) and Linux (real VM)
+            let cmd = "find '\(safePath)' -maxdepth 2 2>/dev/null | head -500 | while IFS= read -r f; do if [ -d \"$f\" ]; then t=d; else t=f; fi; s=0; m=0; printf '%s %s %s %s\\n' \"$t\" \"$s\" \"$m\" \"$f\"; done"
             let process = try await spawn(ProcessSpec(
                 executablePath: "/bin/sh",
-                arguments: ["-c", "find '\(safePath)' -maxdepth 2 -printf '%y %s %T@ %p\\n' 2>/dev/null | head -500"],
+                arguments: ["-c", cmd],
                 workingDirectory: "/"
             ))
 

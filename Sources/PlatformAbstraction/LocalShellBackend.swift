@@ -97,10 +97,18 @@ final class LocalShellVM: VirtualMachine, @unchecked Sendable {
             throw PocketDevError.vmNotRunning
         }
 
+        lock.lock()
         processCounter += 1
-        let process = LocalPTYProcess(pid: processCounter, spec: spec)
+        let pid = processCounter
+        lock.unlock()
+
+        let process = LocalPTYProcess(pid: pid, spec: spec)
         try process.start()
-        processes[processCounter] = process
+
+        lock.lock()
+        processes[pid] = process
+        lock.unlock()
+
         return process
     }
 
@@ -196,9 +204,6 @@ final class LocalPTYProcess: VMProcess, @unchecked Sendable {
 
         // Start background thread to read PTY output
         startReadLoop()
-
-        // Send initialization commands after shell is ready
-        sendInitCommands()
     }
 
     private static func setupHomeDirectory() -> String {
@@ -214,6 +219,7 @@ final class LocalPTYProcess: VMProcess, @unchecked Sendable {
         let zshrc = homeDir + "/.zshrc"
         let rcContent = """
         # PocketDev Terminal
+        unsetopt PROMPT_SP
         PROMPT='%F{cyan}pocketdev%f %F{blue}%~%f %F{green}❯%f '
         export CLICOLOR=1
         export LSCOLORS=GxFxCxDxBxegedabagaced
@@ -221,6 +227,7 @@ final class LocalPTYProcess: VMProcess, @unchecked Sendable {
         alias ll='ls -la'
         alias la='ls -a'
         alias cls='clear'
+        clear
         """
         try? rcContent.write(toFile: zshrc, atomically: true, encoding: .utf8)
 
@@ -286,30 +293,6 @@ final class LocalPTYProcess: VMProcess, @unchecked Sendable {
     }
 
     // MARK: - Private
-
-    private func sendInitCommands() {
-        let fd = masterFD
-        let thread = Thread {
-            Thread.sleep(forTimeInterval: 1.5)
-
-            let commands = [
-                "export PROMPT='%F{cyan}pocketdev%f %F{blue}%~%f %F{green}\u{276f}%f '",
-                "export PATH=/opt/homebrew/bin:/usr/local/bin:$PATH",
-                "alias ll='ls -la'",
-                "alias la='ls -a'",
-                "clear"
-            ]
-            for cmd in commands {
-                let line: [UInt8] = Array((cmd + "\r").utf8)
-                line.withUnsafeBufferPointer { buf in
-                    _ = pty_write_data(fd, buf.baseAddress!, UInt(buf.count))
-                }
-                Thread.sleep(forTimeInterval: 0.1)
-            }
-        }
-        thread.name = "PTY-Init"
-        thread.start()
-    }
 
     private func startReadLoop() {
         let fd = masterFD

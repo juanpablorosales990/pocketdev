@@ -15,10 +15,10 @@ import NetworkManager
 public actor VMLifecycleManager {
     private var containers: [String: ManagedContainer] = [:]
     private let backend: any VMBackend
-    private let imageStore: ImageStore
-    private let kernelManager: KernelManager
+    private let imageStore: ImageStore?
+    private let kernelManager: KernelManager?
 
-    public init(backend: any VMBackend, imageStore: ImageStore, kernelManager: KernelManager) {
+    public init(backend: any VMBackend, imageStore: ImageStore? = nil, kernelManager: KernelManager? = nil) {
         self.backend = backend
         self.imageStore = imageStore
         self.kernelManager = kernelManager
@@ -40,7 +40,10 @@ public actor VMLifecycleManager {
 
         if backend.requiresVMSetup {
             // Full VM path: pull OCI image, build ext4 rootfs, get kernel
-            rootfsPath = try await prepareRootFilesystem(imageName: config.imageName, containerID: id, onProgress: onProgress)
+            guard let imageStore = imageStore, let kernelManager = kernelManager else {
+                throw PocketDevError.vmCreationFailed("ImageStore and KernelManager required for VM backends")
+            }
+            rootfsPath = try await prepareRootFilesystem(imageName: config.imageName, containerID: id, imageStore: imageStore, onProgress: onProgress)
             let kernelPath = try await kernelManager.ensureKernel()
 
             vmConfig = VMConfig(
@@ -174,7 +177,7 @@ public actor VMLifecycleManager {
 
     // MARK: - Private Helpers
 
-    private func prepareRootFilesystem(imageName: String, containerID: String, onProgress: @Sendable @escaping (ContainerProgress) -> Void) async throws -> String {
+    private func prepareRootFilesystem(imageName: String, containerID: String, imageStore: ImageStore, onProgress: @Sendable @escaping (ContainerProgress) -> Void) async throws -> String {
         let ref = OCIImageReference(parsing: imageName) ?? OCIImageReference(repository: "library/alpine", tag: "latest")
 
         // Check if image is cached
@@ -195,11 +198,11 @@ public actor VMLifecycleManager {
 
         // Create ext4 filesystem from layers
         onProgress(.creatingFilesystem)
-        let rootfsPath = try await createRootFilesystem(reference: ref, containerID: containerID)
+        let rootfsPath = try await createRootFilesystem(reference: ref, containerID: containerID, imageStore: imageStore)
         return rootfsPath
     }
 
-    private func createRootFilesystem(reference: OCIImageReference, containerID: String) async throws -> String {
+    private func createRootFilesystem(reference: OCIImageReference, containerID: String, imageStore: ImageStore) async throws -> String {
         guard let entry = await imageStore.getImage(reference) else {
             throw PocketDevError.imageNotFound(reference.description)
         }
@@ -213,12 +216,11 @@ public actor VMLifecycleManager {
         let rootfsPath = containerDir.appendingPathComponent("rootfs.ext4")
 
         // Create ext4 image from OCI layers
-        // This uses our pure-Swift ext4 formatter (ported from Apple's Containerization)
         try await EXT4Builder.build(
             layerDigests: entry.layerDigests,
             imageStore: imageStore,
             outputPath: rootfsPath.path,
-            sizeMB: 2048 // 2GB default
+            sizeMB: 2048
         )
 
         return rootfsPath.path

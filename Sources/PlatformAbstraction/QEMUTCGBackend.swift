@@ -77,23 +77,27 @@ final class QEMUEmbeddedVM: VirtualMachine, @unchecked Sendable {
         _state = .booting
         lock.unlock()
 
-        // In the full implementation, this would:
-        // 1. Initialize the embedded QEMU engine (libqemu)
-        // 2. Configure the virtual machine (CPU, memory, devices)
-        // 3. Load the kernel and initrd into VM memory
-        // 4. Start the QEMU main loop on a background thread
-        // 5. Wait for vminitd to signal readiness via virtio-console
+        // STUB: Full implementation requires embedding libqemu as a C library.
+        // Integration steps needed:
+        // 1. Build QEMU for iOS (aarch64-softmmu) as a static library (libqemu-system-aarch64.a)
+        //    - Configure with: --disable-jit --enable-tcg-interpreter --target-list=aarch64-softmmu
+        //    - Cross-compile with iOS SDK: xcrun -sdk iphoneos clang ...
+        // 2. Link libqemu into the app target via Package.swift or Xcode build settings
+        // 3. Call qemu_init() with argv[] for machine config (virt, cpu, memory, devices)
+        // 4. Attach virtio-console and virtio-vsock backends to in-process I/O buffers
+        // 5. Run qemu_main_loop() on a dedicated background thread (not async)
+        // 6. Wait for vminitd (inside the VM) to signal readiness via virtio-console
 
-        PocketDevLogger.shared.info("QEMU Embedded VM booting: \(config.cpuCount) vCPUs, \(config.memoryMB)MB RAM")
+        PocketDevLogger.shared.info("[STUB] QEMU Embedded VM booting: \(config.cpuCount) vCPUs, \(config.memoryMB)MB RAM")
+        PocketDevLogger.shared.info("[STUB] libqemu not yet integrated — running in demo mode")
 
-        // Simulate boot for now — will be replaced with actual QEMU engine integration
         try await Task.sleep(nanoseconds: 500_000_000) // 500ms simulated boot
 
         lock.lock()
         _state = .running
         lock.unlock()
 
-        PocketDevLogger.shared.info("QEMU Embedded VM \(id) booted")
+        PocketDevLogger.shared.info("[STUB] QEMU Embedded VM \(id) booted (demo mode)")
     }
 
     func suspend() async throws {
@@ -129,10 +133,18 @@ final class QEMUEmbeddedVM: VirtualMachine, @unchecked Sendable {
             throw PocketDevError.vmNotRunning
         }
 
+        lock.lock()
         processCounter += 1
-        let process = QEMUEmbeddedProcess(pid: processCounter, spec: spec)
-        processes[processCounter] = process
+        let pid = processCounter
+        lock.unlock()
+
+        let process = QEMUEmbeddedProcess(pid: pid, spec: spec)
         try await process.start()
+
+        lock.lock()
+        processes[pid] = process
+        lock.unlock()
+
         return process
     }
 
@@ -171,13 +183,23 @@ final class QEMUEmbeddedProcess: VMProcess, @unchecked Sendable {
     }
 
     func start() async throws {
-        // In the real implementation, this sends a command to vminitd
-        // running inside the QEMU VM via virtio-console or vsock
-        PocketDevLogger.shared.info("Spawning process: \(spec.executablePath) \(spec.arguments.joined(separator: " "))")
+        PocketDevLogger.shared.info("[STUB] Spawning process: \(spec.executablePath) \(spec.arguments.joined(separator: " "))")
 
-        // Emit a welcome message for the demo
-        let welcome = "PocketDev Linux Container (QEMU TCG)\r\n\(spec.executablePath) started\r\n$ "
-        outputContinuation.yield(.stdout(Data(welcome.utf8)))
+        // Show a colored warning explaining this is a stub, then a prompt
+        let warning = "\u{1B}[1;33m" +
+            "╔══════════════════════════════════════════════════╗\r\n" +
+            "║  PocketDev — QEMU TCG Backend (Demo Mode)        ║\r\n" +
+            "╠══════════════════════════════════════════════════╣\r\n" +
+            "║  libqemu is not yet integrated.                  ║\r\n" +
+            "║  Input is echoed back — no real VM is running.   ║\r\n" +
+            "║                                                  ║\r\n" +
+            "║  To enable real execution, embed libqemu:        ║\r\n" +
+            "║  1. Build QEMU aarch64-softmmu as static lib     ║\r\n" +
+            "║  2. Link into PocketDev app target               ║\r\n" +
+            "║  3. Provide vmlinux + initrd in app bundle       ║\r\n" +
+            "╚══════════════════════════════════════════════════╝\u{1B}[0m\r\n" +
+            "\r\n\(spec.executablePath) (stub)\r\n$ "
+        outputContinuation.yield(.stdout(Data(warning.utf8)))
     }
 
     func write(_ data: Data) async throws {

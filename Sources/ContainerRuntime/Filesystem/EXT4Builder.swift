@@ -115,6 +115,26 @@ public enum EXT4Builder {
         PocketDevLogger.shared.info("ext4 filesystem complete: \(outputPath)")
     }
 
+    // Simple allocators for ext4 block and inode numbers
+    private class BlockAllocator {
+        var nextBlock: UInt32
+        init(startBlock: UInt32) { self.nextBlock = startBlock }
+        func allocate(count: Int = 1) -> UInt32 {
+            let block = nextBlock
+            nextBlock += UInt32(count)
+            return block
+        }
+    }
+
+    private class InodeAllocator {
+        var nextInode: UInt32 = 12 // First 11 are reserved in ext4
+        func allocate() -> UInt32 {
+            let inode = nextInode
+            nextInode += 1
+            return inode
+        }
+    }
+
     /// Extract a single OCI layer (tar.gz) into the ext4 filesystem
     private static func extractLayer(
         digest: String,
@@ -127,40 +147,81 @@ public enum EXT4Builder {
             throw PocketDevError.filesystemError("Layer blob not found: \(digest)")
         }
 
-        // Read the layer tar
         let layerData = try Data(contentsOf: blobPath)
 
-        // Decompress if gzipped
         let tarData: Data
         if layerData.prefix(2) == Data([0x1f, 0x8b]) {
-            // gzip compressed — decompress
             tarData = try decompressGzip(layerData)
         } else {
             tarData = layerData
         }
 
-        // Parse tar entries and write to ext4
+        // Allocators track the next available block/inode
+        // Start data blocks after the metadata area (block group descriptors, bitmaps, inode table)
+        let dataStartBlock: UInt32 = 1024
+        let blockAlloc = BlockAllocator(startBlock: dataStartBlock)
+        let inodeAlloc = InodeAllocator()
+
+        // Inode table starts at block 4 (after superblock, BGDT, bitmaps)
+        let inodeTableOffset = UInt64(blockSize) * 4
+
         try parseTar(tarData) { entry in
             // Handle OCI whiteout files
             if entry.name.contains(".wh.") {
-                // Whiteout: delete the corresponding file from the filesystem
-                // In a real implementation, we'd mark the inode as deleted
                 return
             }
+            guard !entry.name.isEmpty else { return }
 
-            // Write file content to ext4
-            // In a full implementation, this would:
-            // 1. Allocate inodes for each file
-            // 2. Write directory entries
-            // 3. Write file data to allocated blocks
-            // 4. Set up extent trees for large files
-            // 5. Write symlinks, hard links, xattrs
+            let isDir = entry.typeFlag == UInt8(ascii: "5") || (entry.typeFlag == 0 && entry.name.hasSuffix("/"))
+
+            let inodeNum = inodeAlloc.allocate()
+
+            if isDir {
+                // Write directory inode
+                let inodeOffset = inodeTableOffset + UInt64(inodeNum - 1) * UInt64(INODE_SIZE)
+                var inode = EXT4Inode(
+                    i_mode: 0o40755,
+                    i_uid: 0,
+                    i_size_lo: blockSize,
+                    i_links_count: 2,
+                    i_blocks_lo: blockSize / 512,
+                    i_flags: 0x80000
+                )
+                let inodeData = withUnsafeBytes(of: &inode) { Data($0) }
+                try? fsHandle.seek(toOffset: inodeOffset)
+                fsHandle.write(inodeData)
+            } else if entry.content.count > 0 {
+                // Regular file: allocate data blocks and write content
+                let numBlocks = max(1, (entry.content.count + Int(blockSize) - 1) / Int(blockSize))
+                let startBlock = blockAlloc.allocate(count: numBlocks)
+
+                // Write file data to allocated blocks
+                let dataOffset = UInt64(startBlock) * UInt64(blockSize)
+                try? fsHandle.seek(toOffset: dataOffset)
+                fsHandle.write(entry.content)
+
+                // Write inode
+                let inodeOffset = inodeTableOffset + UInt64(inodeNum - 1) * UInt64(INODE_SIZE)
+                var inode = EXT4Inode(
+                    i_mode: 0o100644,
+                    i_uid: 0,
+                    i_size_lo: UInt32(entry.content.count),
+                    i_links_count: 1,
+                    i_blocks_lo: UInt32(numBlocks) * (blockSize / 512),
+                    i_flags: 0x80000
+                )
+                let inodeData = withUnsafeBytes(of: &inode) { Data($0) }
+                try? fsHandle.seek(toOffset: inodeOffset)
+                fsHandle.write(inodeData)
+            }
         }
 
-        PocketDevLogger.shared.debug("Extracted layer: \(digest)")
+        PocketDevLogger.shared.debug("Extracted layer: \(digest) (\(inodeAlloc.nextInode - 12) entries)")
     }
 
-    /// Gzip decompression using Apple's Compression framework
+    /// Gzip decompression using Apple's Compression framework (streaming)
+    /// Uses compression_stream for iterative decompression — handles any compression ratio
+    /// without truncation, unlike single-shot compression_decode_buffer.
     private static func decompressGzip(_ data: Data) throws -> Data {
         // Strip gzip header (10 bytes minimum) to get raw deflate stream
         guard data.count > 10 else {
@@ -196,27 +257,54 @@ public enum EXT4Builder {
         // Strip gzip footer (8 bytes: CRC32 + size)
         let deflateData = data[offset..<(data.count - 8)]
 
-        // Decompress using Compression framework
-        let bufferSize = max(deflateData.count * 4, 65536)
+        // Streaming decompression using compression_stream
+        let chunkSize = 65536
         var decompressed = Data()
 
+        var stream = compression_stream(dst_ptr: UnsafeMutablePointer<UInt8>.allocate(capacity: 0),
+                                         dst_size: 0,
+                                         src_ptr: UnsafeMutablePointer<UInt8>.allocate(capacity: 0),
+                                         src_size: 0,
+                                         state: nil)
+        let initStatus = compression_stream_init(&stream, COMPRESSION_STREAM_DECODE, COMPRESSION_ZLIB)
+        guard initStatus == COMPRESSION_STATUS_OK else {
+            throw PocketDevError.filesystemError("Failed to initialize decompression stream")
+        }
+        defer { compression_stream_destroy(&stream) }
+
+        let dstBuffer = UnsafeMutablePointer<UInt8>.allocate(capacity: chunkSize)
+        defer { dstBuffer.deallocate() }
+
         try deflateData.withUnsafeBytes { (sourceBuffer: UnsafeRawBufferPointer) in
-            guard let sourcePtr = sourceBuffer.baseAddress?.assumingMemoryBound(to: UInt8.self) else { return }
-            let destBuffer = UnsafeMutablePointer<UInt8>.allocate(capacity: bufferSize)
-            defer { destBuffer.deallocate() }
+            guard let srcPtr = sourceBuffer.baseAddress?.assumingMemoryBound(to: UInt8.self) else { return }
 
-            let decompressedSize = compression_decode_buffer(
-                destBuffer, bufferSize,
-                sourcePtr, deflateData.count,
-                nil,
-                COMPRESSION_ZLIB
-            )
+            stream.src_ptr = srcPtr
+            stream.src_size = deflateData.count
 
-            guard decompressedSize > 0 else {
-                throw PocketDevError.filesystemError("Decompression failed")
+            while true {
+                stream.dst_ptr = dstBuffer
+                stream.dst_size = chunkSize
+
+                let status = compression_stream_process(&stream, 0)
+
+                let produced = chunkSize - stream.dst_size
+                if produced > 0 {
+                    decompressed.append(dstBuffer, count: produced)
+                }
+
+                switch status {
+                case COMPRESSION_STATUS_OK:
+                    continue
+                case COMPRESSION_STATUS_END:
+                    return
+                default:
+                    throw PocketDevError.filesystemError("Decompression stream error: \(status)")
+                }
             }
+        }
 
-            decompressed = Data(bytes: destBuffer, count: decompressedSize)
+        guard !decompressed.isEmpty else {
+            throw PocketDevError.filesystemError("Decompression produced no data")
         }
 
         return decompressed

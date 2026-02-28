@@ -56,12 +56,31 @@ public actor KernelManager {
     }
 
     private func downloadKernel(to destination: URL) async throws {
-        // In production, this would download from PocketDev's CDN
-        // For now, we'll build the kernel from Apple's config and bundle it
-        throw PocketDevError.vmBootFailed("Kernel not found. Please build and include vmlinux in the app bundle.")
+        throw PocketDevError.vmBootFailed("""
+            Linux kernel not found. To build a compatible kernel:
+
+            1. Clone linux-stable: git clone --depth 1 --branch v\(kernelVersion) \
+               https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git
+            2. Apply the PocketDev defconfig (or start from Apple's virt config):
+               make ARCH=arm64 defconfig
+               scripts/config --enable VIRTIO_MMIO --enable VIRTIO_CONSOLE \
+                   --enable VIRTIO_BLK --enable VIRTIO_VSOCK --enable EXT4_FS \
+                   --enable OVERLAY_FS --enable CGROUPS --enable NAMESPACES
+            3. Cross-compile: make ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- -j$(nproc) Image
+            4. Copy arch/arm64/boot/Image to the Xcode project as 'vmlinux'
+               (Add to the app target's "Copy Bundle Resources" build phase)
+
+            Alternatively, download a prebuilt kernel from PocketDev releases.
+            """)
     }
 
     private func downloadInitrd(to destination: URL) async throws {
-        throw PocketDevError.vmBootFailed("Initrd not found. Please build and include initrd.img in the app bundle.")
+        throw PocketDevError.vmBootFailed("""
+            Initrd (initial ramdisk) not found. The initrd contains vminitd — \
+            PocketDev's guest-side agent that manages process spawning, I/O, and networking.
+
+            To build: cd tools/vminitd && make ARCH=arm64
+            Then add the output 'initrd.img' to the Xcode project's bundle resources.
+            """)
     }
 }

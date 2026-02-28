@@ -70,6 +70,7 @@ public final class BackendSelector: Sendable {
     public static func deviceCapabilities() -> DeviceCapabilities {
         let hypervisor = HypervisorBackend.checkAvailability()
         let qemu = QEMUTCGBackend.checkAvailability()
+        let localShell = LocalShellBackend.checkAvailability()
 
         let totalMemory = ProcessInfo.processInfo.physicalMemory
         let availableMemory = totalMemory / 2 // Conservative: use at most half for VM
@@ -78,6 +79,7 @@ public final class BackendSelector: Sendable {
         return DeviceCapabilities(
             hypervisorAvailable: hypervisor.available,
             qemuAvailable: qemu.available,
+            localShellAvailable: localShell.available,
             totalMemoryMB: Int(totalMemory / 1024 / 1024),
             availableForVMMB: Int(availableMemory / 1024 / 1024),
             processorCount: processorCount,
@@ -91,6 +93,7 @@ public final class BackendSelector: Sendable {
 public struct DeviceCapabilities: Sendable {
     public let hypervisorAvailable: Bool
     public let qemuAvailable: Bool
+    public let localShellAvailable: Bool
     public let totalMemoryMB: Int
     public let availableForVMMB: Int
     public let processorCount: Int
@@ -100,11 +103,15 @@ public struct DeviceCapabilities: Sendable {
 
     public var bestPerformanceTier: PerformanceTier {
         if hypervisorAvailable { return .native }
+        if localShellAvailable { return .native }
         if qemuAvailable { return .emulated }
         return .remote
     }
 
     public var summary: String {
+        if localShellAvailable {
+            return "Local Shell — native PTY terminal (\(processorCount) cores, \(totalMemoryMB)MB RAM)"
+        }
         let tier = bestPerformanceTier
         switch tier {
         case .native:

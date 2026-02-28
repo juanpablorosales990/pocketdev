@@ -84,7 +84,8 @@ struct SettingsView: View {
                 // Device Info
                 Section("Device") {
                     if let caps = appState.capabilities {
-                        InfoRow(label: "Backend", value: caps.bestPerformanceTier == .native ? "Hypervisor" :
+                        InfoRow(label: "Backend", value: caps.localShellAvailable ? "Local Shell (PTY)" :
+                                caps.bestPerformanceTier == .native ? "Hypervisor" :
                                 caps.bestPerformanceTier == .emulated ? "QEMU TCG" : "Remote")
                         InfoRow(label: "CPU Cores", value: "\(caps.processorCount)")
                         InfoRow(label: "Memory", value: "\(caps.totalMemoryMB) MB")

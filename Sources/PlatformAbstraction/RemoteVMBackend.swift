@@ -212,10 +212,18 @@ final class RemoteVM: VirtualMachine, @unchecked Sendable {
             throw PocketDevError.vsockConnectionFailed("WebSocket not connected")
         }
 
+        lock.lock()
         processCounter += 1
-        let process = RemoteVMProcess(pid: processCounter, spec: spec, webSocket: ws)
-        processes[processCounter] = process
+        let pid = processCounter
+        lock.unlock()
+
+        let process = RemoteVMProcess(pid: pid, spec: spec, webSocket: ws)
         try await process.start()
+
+        lock.lock()
+        processes[pid] = process
+        lock.unlock()
+
         return process
     }
 

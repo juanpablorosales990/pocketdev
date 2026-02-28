@@ -317,6 +317,7 @@ struct NewContainerSheet: View {
 
         Task {
             do {
+                try await appState.initializeRuntime()
                 let imageName = selectedTemplate == .custom ? customImage : selectedTemplate.rawValue
                 let config = ContainerConfig(
                     name: name,

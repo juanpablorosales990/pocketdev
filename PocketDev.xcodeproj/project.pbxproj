@@ -41,6 +41,7 @@
 		AA0001000000000000000005 /* VirtioMMIO.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0002000000000000000005 /* VirtioMMIO.swift */; };
 		AA0001000000000000000006 /* VirtioBlk.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0002000000000000000006 /* VirtioBlk.swift */; };
 		AA0001000000000000000007 /* VirtioConsole.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0002000000000000000007 /* VirtioConsole.swift */; };
+		BB0001000000000000000001 /* vmlinux in Resources */ = {isa = PBXBuildFile; fileRef = BB0002000000000000000001 /* vmlinux */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -90,6 +91,7 @@
 		AA0002000000000000000005 /* VirtioMMIO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VirtioMMIO.swift; sourceTree = "<group>"; };
 		AA0002000000000000000006 /* VirtioBlk.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VirtioBlk.swift; sourceTree = "<group>"; };
 		AA0002000000000000000007 /* VirtioConsole.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VirtioConsole.swift; sourceTree = "<group>"; };
+		BB0002000000000000000001 /* vmlinux */ = {isa = PBXFileReference; lastKnownFileType = file; path = vmlinux; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -102,6 +104,17 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXResourcesBuildPhase section */
+		BB0004000000000000000001 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				BB0001000000000000000001 /* vmlinux in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
 
 /* Begin PBXGroup section */
 		23E3B8EB920A3F5ED90FC81E /* include */ = {
@@ -158,9 +171,18 @@
 			isa = PBXGroup;
 			children = (
 				3C0FCABB18896B7846E67673 /* Sources */,
+				BB0003000000000000000001 /* Resources */,
 				F7533E452CBA2A7DB9E90185 /* Tests */,
 				A043D45E1F35080DF972FB33 /* Products */,
 			);
+			sourceTree = "<group>";
+		};
+		BB0003000000000000000001 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				BB0002000000000000000001 /* vmlinux */,
+			);
+			path = Resources;
 			sourceTree = "<group>";
 		};
 		867D7C6ACC71D065F69AF5F4 /* Shared */ = {
@@ -317,6 +339,7 @@
 			buildPhases = (
 				DB423E731C7EA97DF46EDC02 /* Sources */,
 				FB2C3D4E5F67890A1B2C3D4E /* Frameworks */,
+				BB0004000000000000000001 /* Resources */,
 			);
 			buildRules = (
 			);

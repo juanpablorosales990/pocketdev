@@ -38,6 +38,7 @@ public final class AppState: ObservableObject {
     private var lifecycleManager: VMLifecycleManager?
     private var imageStore: ImageStore?
     private var kernelManager: KernelManager?
+    private var isInitialized = false
 
     public init() {
         detectCapabilities()
@@ -50,18 +51,33 @@ public final class AppState: ObservableObject {
     }
 
     func initializeRuntime() async throws {
+        if isInitialized { return }
+
         let detection = BackendSelector.detect()
         backend = detection.selectedBackend
 
-        imageStore = try ImageStore()
-        kernelManager = KernelManager()
+        if detection.selectedBackend.requiresVMSetup {
+            imageStore = try ImageStore()
+            kernelManager = KernelManager()
+        }
+
         lifecycleManager = VMLifecycleManager(
             backend: detection.selectedBackend,
-            imageStore: imageStore!,
-            kernelManager: kernelManager!
+            imageStore: imageStore,
+            kernelManager: kernelManager
         )
 
+        isInitialized = true
         currentScreen = .home
+    }
+
+    /// Spawn a process in the active container (used by file browser)
+    func spawnProcess(for containerID: String, spec: ProcessSpec) async throws -> any VMProcess {
+        guard let manager = lifecycleManager else {
+            throw PocketDevError.unsupportedPlatform
+        }
+        let vm = try await manager.getVM(containerID: containerID)
+        return try await vm.spawnProcess(spec)
     }
 
     // MARK: - Container Operations

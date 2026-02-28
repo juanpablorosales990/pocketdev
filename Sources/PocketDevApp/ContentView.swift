@@ -84,10 +84,11 @@ struct OnboardingView: View {
                         VStack(spacing: 12) {
                             CapabilityRow(
                                 label: "Performance",
-                                value: caps.bestPerformanceTier == .native ? "Native Speed" :
+                                value: caps.localShellAvailable ? "Local Shell (Native)" :
+                                    caps.bestPerformanceTier == .native ? "Native Speed" :
                                     caps.bestPerformanceTier == .emulated ? "Emulated (QEMU)" : "Cloud",
-                                icon: caps.bestPerformanceTier == .native ? "bolt.fill" : "hare",
-                                color: caps.bestPerformanceTier == .native ? .green : .yellow
+                                icon: caps.localShellAvailable || caps.bestPerformanceTier == .native ? "bolt.fill" : "hare",
+                                color: caps.localShellAvailable || caps.bestPerformanceTier == .native ? .green : .yellow
                             )
                             CapabilityRow(
                                 label: "CPU Cores",

@@ -173,10 +173,13 @@ struct FileBrowserPanel: View {
             // Open file in editor or navigate in terminal
         }
         .onAppear {
-            if let containerID = appState.activeContainerID,
-               let session = appState.terminalSessions[containerID] {
-                // Connect file browser to VM
-                // viewModel.connect(spawnProcess: vm.spawnProcess)
+            if let containerID = appState.activeContainerID {
+                viewModel.connect { spec in
+                    try await appState.spawnProcess(for: containerID, spec: spec)
+                }
+                Task {
+                    await viewModel.listDirectory()
+                }
             }
         }
     }
